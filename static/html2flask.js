@@ -1,6 +1,7 @@
 function html2flask() {
     
     var itemName = document.getElementById("itemname").value;
+    var result
 
     if(itemName==""){
         $("#errMsgForm").text("Please enter item name!")
@@ -35,8 +36,14 @@ function html2flask() {
         success: function(result) {
             console.log("Result:");
             console.log(result);
+            var markup = "<tr><td><input type='checkbox' name='record'></td><td>" + result.item + "</td><td>" + result.eggScore + "</td><td>" + result.nutsScore + "</td><td>" + result.milkScore + "</td></tr>";
+            $("table tbody:last").append(markup);
           } 
       });
+    
+    // add row to table
+
+    
     
     // clear form
     document.getElementById("itemname").value = "";
