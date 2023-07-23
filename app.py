@@ -50,6 +50,21 @@ def test():
             db.create_all()
     return render_template('test2.html')
 
+@app.route("/load_current_db", methods=['POST', 'GET'])
+def load_current_db():
+    results = Allergen.query.filter_by(customerID='0').all()
+    response = []
+    for result in results:
+        response.append(
+            {'item': result.item,
+             'eggScore': result.eggScore,
+             'nutsScore': result.nutsScore,
+             'milkScore': result.nutsScore}
+        )
+    
+    print(response)
+    return jsonify(response)
+
 @app.route("/proc_allergen_db", methods=['POST', 'GET'])
 def process():
     if request.method == "POST":
