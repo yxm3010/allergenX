@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='html2flask.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='removerow.js') }}"></script> -->
     <script>
 
         function score2symbol(score){
@@ -32,7 +33,7 @@
                 console.log("Result:");
                 console.log(result);
                 $.each(result, function(){
-                    var markup = "<tr><td><input type='checkbox' name='record'></td><td>" + this.item + "</td><td>" + score2symbol(this.eggScore) + "</td><td>" + score2symbol(this.nutsScore) + "</td><td>" + score2symbol(this.milkScore) + "</td></tr>";
+                    var markup = "<tr><td><input type='checkbox' name='record'></td><td><button type='button' class='btn btn-outline-warning btn-sm' id='editRow'>Edit</button></td><td>" + this.item + "</td><td>" + score2symbol(this.eggScore) + "</td><td>" + score2symbol(this.nutsScore) + "</td><td>" + score2symbol(this.milkScore) + "</td></tr>";
                     $("table tbody:last").append(markup);
                 })
             } 
@@ -119,10 +120,11 @@
         
         <hr class="my-4">
 
-        <table class="table"">
+        <table class="table" id="dbtable">
             <thead>
                 <tr>
                     <th>Select</th>
+                    <th>Edit</th>
                     <th>Item</th>
                     <th>Eggs</th>
                     <th>Nuts</th>
@@ -133,7 +135,7 @@
             </tbody>
         </table>
 
-        <button type='button' class='btn btn-danger' id='delitem'>Remove</button>
+        <button type='button' class='btn btn-danger' id='delitem' onclick="removerow()">Remove</button>
         <hr class="my-4">
 
         <button type="button" class="btn btn-primary" id="QRcode">Get QR Code</button>

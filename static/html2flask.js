@@ -33,12 +33,7 @@ function html2flask() {
         data: JSON.stringify(server_data),
         contentType: "application/json",
         dataType: 'json', 
-        success: function(result) {
-            console.log("Result:");
-            console.log(result);
-            var markup = "<tr><td><input type='checkbox' name='record'></td><td>" + result.item + "</td><td>" + result.eggScore + "</td><td>" + result.nutsScore + "</td><td>" + result.milkScore + "</td></tr>";
-            $("table tbody:last").append(markup);
-          } 
+        success: location.reload()
       });
     
     // add row to table
@@ -53,6 +48,34 @@ function html2flask() {
     document.getElementById("eggOptions").value = "No";
     document.getElementById("nutsOptions").value = "No";
     document.getElementById("milkOptions").value = "No";
+}
+
+function removerow(){
+    var i = 0;
+    const items = [];
+    $("#dbtable input[type=checkbox]:checked").each(function () {
+        var currentRow = $(this).closest("tr");
+        var itemName = currentRow.find("td:eq(2)").text();
+        items[i] = itemName;
+        i += 1;
+    });
+    
+    if(confirm('Are you sure to delete the following from the database?\n ${items}') == true){
+
+        var serverData = [
+            {"customerID": 0},
+            {"items": items},
+        ];
+
+        $.ajax({
+            type: "POST",
+            url: "/del_allergen_db",
+            data: JSON.stringify(serverData),
+            contentType: "application/json",
+            dataType: 'json',
+            success: location.reload()
+            })
+    }
 }
 
 // https://stackoverflow.com/questions/41144565/flask-does-not-see-change-in-js-file

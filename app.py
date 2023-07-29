@@ -52,7 +52,7 @@ def test():
 
 @app.route("/load_current_db", methods=['POST', 'GET'])
 def load_current_db():
-    results = Allergen.query.filter_by(customerID='0').all()
+    results = Allergen.query.filter_by(customerID='0').order_by(Allergen.item).all()
     response = []
     for result in results:
         response.append(
@@ -98,6 +98,17 @@ def process():
                   }
         """ 'item': db.session.execute(db.select(Allergen.item).where(Allergen.customerID == allergen_data[0]['customerID'].where(Allergen.item == allergen_data[0]['customerID']))) """
         return jsonify(result)
+    
+@app.route("/del_allergen_db", methods=['POST', 'GET'])
+def delete():
+    if request.method == "POST":
+        serverData = request.get_json()
+        items = serverData[1]['items']
+        print(serverData)
+        for itemName in items:
+            Allergen.query.filter_by(customerID=serverData[0]['customerID'], item=itemName).delete()
+            db.session.commit()
+    return True
 
 if __name__ == "__main__":
     app.run(debug=True)
