@@ -59,7 +59,7 @@ def load_current_db():
             {'item': result.item,
              'eggScore': result.eggScore,
              'nutsScore': result.nutsScore,
-             'milkScore': result.nutsScore}
+             'milkScore': result.milkScore}
         )
     
     print(response)
@@ -109,6 +109,52 @@ def delete():
             Allergen.query.filter_by(customerID=serverData[0]['customerID'], item=itemName).delete()
             db.session.commit()
     return True
+
+@app.route("/query_db", methods=['POST', 'GET'])
+def query_db():
+    if request.method == "POST":
+        allergen_data = request.get_json()
+        
+        # Debug
+        print(allergen_data)
+
+        chkWheat = allergen_data[1]['chkWheat']
+        chkMilk = allergen_data[2]['chkMilk']
+        chkEggs = allergen_data[3]['chkEggs']
+        chkFish = allergen_data[4]['chkFish']
+        chkShellfish = allergen_data[5]['chkShellfish']
+        chkSesame = allergen_data[6]['chkSesame']
+        chkNuts = allergen_data[7]['chkNuts']
+        chkPeanuts = allergen_data[8]['chkPeanuts']
+        chkSoy = allergen_data[9]['chkSoy']
+
+        # Query data
+        # This is not an elegant way to do dynamic query but implemented by successive subqueries to filter down
+
+        results = Allergen.query.filter(Allergen.customerID==allergen_data[0]['customerID'])
+
+        if chkMilk:
+            results = results.filter(Allergen.milkScore>=50)
+        
+        if chkEggs:
+            results = results.filter(Allergen.eggScore>=50)
+        
+        if chkNuts:
+            results = results.filter(Allergen.nutsScore>=50)
+
+        results = results.order_by(Allergen.item)
+        response = []
+        for result in results.all():
+            response.append({'item': result.item,
+                    'eggScore': result.eggScore,
+                    'nutsScore': result.nutsScore,
+                    'milkScore': result.milkScore
+                    })
+        
+        # Debug
+        print(response)
+
+        return jsonify(response)
 
 if __name__ == "__main__":
     app.run(debug=True)

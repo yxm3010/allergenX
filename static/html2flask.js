@@ -78,4 +78,14 @@ function removerow(){
     }
 }
 
+function score2symbol(score){
+    if(score==100){
+        return ""
+    }else if(score==50){
+        return "<i style='color:orange' class='bi bi-x-octagon'></i>"
+    }else{
+        return "<i style='color:red' class='bi bi-x-octagon-fill'></i>";
+    }
+}
+
 // https://stackoverflow.com/questions/41144565/flask-does-not-see-change-in-js-file
