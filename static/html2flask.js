@@ -1,4 +1,4 @@
-function html2flask() {
+function addrow() {
     
     var itemName = document.getElementById("itemname").value;
     var result

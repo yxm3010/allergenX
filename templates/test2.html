@@ -9,9 +9,9 @@
     <script src="{{ url_for('static', filename='html2flask.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <!-- <script src="{{ url_for('static', filename='removerow.js') }}"></script> -->
     <script>
 
+        
         $(document).ready(function(){
             var customer_ID = [{"customerID": 0}];
 
@@ -25,17 +25,48 @@
                 console.log("Result:");
                 console.log(result);
                 $.each(result, function(){
-                    var markup = "<tr><td><input type='checkbox' name='record'></td><td><button type='button' class='btn btn-outline-warning btn-sm' data-bs-toggle='modal' data-bs-target='#editModal'>Edit</button></td><td>" + this.item + "</td><td>" + score2symbol(this.eggScore) + "</td><td>" + score2symbol(this.nutsScore) + "</td><td>" + score2symbol(this.milkScore) + "</td></tr>";
-                    $("table tbody:last").append(markup);
+                    /* var markup = "<tr><td><input type='checkbox' name='record'></td><td><button type='button' class='btn btn-outline-warning btn-sm editbtn' data-bs-toggle='modal' data-bs-target='#editModal' data-bs-whatever='Edit Item'>Edit</button></td><td>" + this.item + "</td><td>" + score2symbol(this.eggScore) + "</td><td>" + score2symbol(this.nutsScore) + "</td><td>" + score2symbol(this.milkScore) + "</td><td>" + score2symbol(this.wheatScore) + "</td><td>" + score2symbol(this.fishScore) + "</td><td>" + score2symbol(this.shellfishScore) + "</td><td>" + score2symbol(this.sesamiScore) + "</td><td>" + score2symbol(this.peanutsScore) + "</td><td>" + score2symbol(this.soyScore) + "</td></tr>";
+                    $("#dbtable tbody:last").append(markup); */
+                    var markup = "<tr><td><input type='checkbox' name='record'></td><td><button type='button' class='btn btn-outline-warning btn-sm' onclick='showmodal()'>Edit</button></td><td>" + this.item + "</td><td>" + score2symbol(this.eggScore) + "</td><td>" + score2symbol(this.nutsScore) + "</td><td>" + score2symbol(this.milkScore) + "</td><td>" + score2symbol(this.wheatScore) + "</td><td>" + score2symbol(this.fishScore) + "</td><td>" + score2symbol(this.shellfishScore) + "</td><td>" + score2symbol(this.sesamiScore) + "</td><td>" + score2symbol(this.peanutsScore) + "</td><td>" + score2symbol(this.soyScore) + "</td></tr>";
+                    $("#dbtable tbody:last").append(markup); 
                 })
-            } 
-      });
-
-    //   $('#editModal').on('show.bs.modal', function(){
-    //     $('#editItemName').attr('placeholder', 'test')
-    //   })
+            }
+            });
         })
-        
+
+        function showmodal(event){
+            $('#editModal').modal('show');
+            var button = $(event.relatedTarget);
+            var $row = $(button).closest("tr");
+            var $cols = $row.find("td");
+            $.each($cols, function(){
+                alert($(this),text());
+            })
+            
+            $('#itemname').value='test';
+            }
+
+
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (() => {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+
+            form.classList.add('was-validated')
+            }, false)
+        })
+        })
+    
     </script>
   </head>
   <body>
@@ -43,19 +74,7 @@
 
     {% block content %}
     <div class="container">
-        <form>    
-            {% include 'forms.html' %}
-            <div class="form-row">
-                <button type="button" class="btn btn-primary" id="additem" onclick="html2flask()">Add Item</button>
-            </div>
-            <div class="form-row">
-                <p class="text-danger" id="errMsgForm"></p>
-            </div>
-        </form>
-        
-        <hr class="my-4">
-
-        <table class="table" id="dbtable">
+        <table class="table table-striped table-sm align-middle table-bordered" id="dbtable">
             <thead>
                 <tr>
                     <th>Select</th>
@@ -64,41 +83,65 @@
                     <th>Eggs</th>
                     <th>Nuts</th>
                     <th>Milk</th>
+                    <th>Wheat</th>
+                    <th>Fish</th>
+                    <th>Shellfish</th>
+                    <th>Sesami</th>
+                    <th>Peanut</th>
+                    <th>Soy</th>
                 </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
 
-        <button type='button' class='btn btn-danger' id='delitem' onclick="removerow()">Remove</button>
+        <button type='button' class='btn btn-primary' id='additem' data-bs-toggle="modal" data-bs-target="#addModal">Add New Item</button>
+        <button type='button' class='btn btn-danger' id='delitem' onclick="removerow()">Remove Item(s)</button>
         <hr class="my-4">
+        <p class="text-danger" id="errMsgForm"></p>
 
         <button type="button" class="btn btn-primary" id="QRcode">Get QR Code</button>
         
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal hide fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Entry</h5>
+                    <h1 class="modal-title fs-5" id="editModalLabel">Edit Item</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div><p>Feature to be added.</p>
-                        <!-- {% include 'forms.html' without context %} -->
-                    </div>
+                    <form action="{{ url_for('add_new_row') }}" method="post">
+                        {% include 'forms.html' %}
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" id="updateitem" onclick="editrow()">Update Item</button>
+                    <p class="text-danger" id="errMsgForm"></p>
                 </div>
             </div>
         </div>
     </div>
-    
+
+    <div class="modal hide fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addModalLabel">Add New Item</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="needs-validation" action="{{ url_for('add_new_row') }}" method="post">
+                        {% include 'forms.html' %}
+                        <button type="submit" class="btn btn-primary" id="additem" name="additem" required>Add Item</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endblock %}
-  </body>  
-  </html>
+</body> 
+</html>
  <!--  https://towardsdatascience.com/using-python-flask-and-ajax-to-pass-information-between-the-client-and-server-90670c64d688 -->
