@@ -73,6 +73,7 @@
         
     </div>
 
+     <!-- Modal for Update Item -->
     <div class="modal hide fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -81,19 +82,17 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{ url_for('add_new_row') }}" method="post">
+                    <form action="{{ url_for('update_row') }}" method="post">
                         {% include 'forms.html' %}
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="updateitem" name="updateitem" required>Update</button>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="updateitem" onclick="updateitem()">Update Item</button>
-                    <p class="text-danger" id="errMsgForm"></p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal for Add New Item -->
     <div class="modal hide fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

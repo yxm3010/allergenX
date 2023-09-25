@@ -1,5 +1,5 @@
 function addrow() {
-    
+/*     
     var itemName = document.getElementById("itemname").value;
     var result
 
@@ -43,7 +43,7 @@ function addrow() {
     document.getElementById("milkCheck").checked = false;
     document.getElementById("eggOptions").value = "No";
     document.getElementById("nutsOptions").value = "No";
-    document.getElementById("milkOptions").value = "No";
+    document.getElementById("milkOptions").value = "No"; */
 }
 
 function removerow(){
@@ -95,6 +95,8 @@ function editrow(ctl){
    
     $('#editModal').on('shown.bs.modal', function (event) {
         $('#itemname').val(edititemname);
+        // To make it simple, make item name just read only
+        $('#itemname').attr('readonly',true)
 
         if(editEggScore=='X'){
             $("#eggCheck").prop('checked',true);
@@ -196,6 +198,12 @@ function editrow(ctl){
         }
 
     })
+}
+
+function updateitem(){
+    var updateItemName = document.getElementById("itemname").value;
+    alert(updateItemName);
+
 }
 
 function score2symbol(score){

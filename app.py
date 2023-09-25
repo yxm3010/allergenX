@@ -192,7 +192,79 @@ def add_new_row():
             return redirect(url_for('test'))
         except:
             return redirect(url_for('test'))
-    
+
+@app.route("/update_row", methods=['POST', 'GET'])
+def update_row():
+    if request.method == "POST":
+
+        _itemName = request.form['itemname']
+        
+        _hasEggs = True if (request.form.get('eggCheck')) else False
+        _eggOptions = True if (request.form.get('eggOptions') == "Yes") else False
+
+        _hasNuts = True if (request.form.get('nutsCheck')) else False
+        _nutsOptions = True if (request.form.get('nutsOptions') == "Yes") else False
+
+        _hasMilk = True if (request.form.get('milkCheck')) else False
+        _milkOptions = True if (request.form.get('milkOptions') == "Yes") else False
+
+        _hasWheat = True if (request.form.get('wheatCheck')) else False
+        _wheatOptions = True if (request.form.get('wheatOptions') == "Yes") else False
+
+        _hasFish = True if (request.form.get('fishCheck')) else False
+        _fishOptions = True if (request.form.get('fishOptions') == "Yes") else False
+
+        _hasShellfish = True if (request.form.get('shellfishCheck')) else False
+        _shellfishOptions = True if (request.form.get('shellfishOptions') == "Yes") else False
+
+        _hasSesami = True if (request.form.get('sesamiCheck')) else False
+        _sesamiOptions = True if (request.form.get('sesamiOptions') == "Yes") else False
+
+        _hasPeanuts = True if (request.form.get('peanutsCheck')) else False
+        _peanutsOptions = True if (request.form.get('peanutsOptions') == "Yes") else False
+
+        _hasSoy = True if (request.form.get('soyCheck')) else False
+        _soyOptions = True if (request.form.get('soyOptions') == "Yes") else False
+
+        try:
+            _db_row = Allergen.query.filter_by(customerID=0, item=_itemName).first()
+            print("dbrow")
+            print(_db_row.item)
+            print(_hasEggs)
+            _db_row.timestamp = datetime.now()
+            _db_row.hasEggs = _hasEggs
+            _db_row.eggOptions = _eggOptions
+            _db_row.eggScore = get_score(_hasEggs, _eggOptions)
+            _db_row.hasNuts = _hasNuts
+            _db_row.nutsOptions = _nutsOptions
+            _db_row.nutsScore = get_score(_hasNuts, _nutsOptions)
+            _db_row.hasMilk = _hasMilk
+            _db_row.milkOptions = _milkOptions
+            _db_row.milkScore = get_score(_hasMilk, _milkOptions)
+            _db_row.hasWheat = _hasWheat
+            _db_row.wheatOptions = _wheatOptions
+            _db_row.wheatScore = get_score(_hasWheat, _wheatOptions)
+            _db_row.hasFish = _hasFish
+            _db_row.fishOptions = _fishOptions
+            _db_row.fishScore = get_score(_hasFish, _fishOptions)
+            _db_row.hasShellfish = _hasShellfish
+            _db_row.shellfishOptions = _shellfishOptions
+            _db_row.shellfishScore = get_score(_hasShellfish, _shellfishOptions)
+            _db_row.hasSesami = _hasSesami
+            _db_row.sesamiOptions = _sesamiOptions
+            _db_row.sesamiScore = get_score(_hasSesami, _sesamiOptions)
+            _db_row.hasPeanuts = _hasPeanuts
+            _db_row.peanutsOptions = _peanutsOptions
+            _db_row.peanutsScore = get_score(_hasPeanuts, _peanutsOptions)
+            _db_row.hasSoy = _hasSoy
+            _db_row.soyOptions = _soyOptions
+            _db_row.soyScore = get_score(_hasSoy, _soyOptions)
+            db.session.commit()
+            return redirect(url_for('test'))
+        except:
+            return redirect(url_for('test'))
+
+
 @app.route("/del_allergen_db", methods=['POST', 'GET'])
 def delete():
     if request.method == "POST":
