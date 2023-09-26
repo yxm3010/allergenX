@@ -1,6 +1,18 @@
-<input type="text" class="form-control" id="itemname" name="itemname" value="" required>
-<div class="invalid-feedback">
-    Item name cannot be empty.
+<div class="input-group mb-3">
+    <input type="text" class="form-control" id="itemname" name="itemname" placeholder="Enter item name" required>
+    <div class="invalid-feedback">
+        Item name cannot be empty.
+    </div>
+</div>
+<div class="input-group mb-3">
+    <select class="form-control" id="itemcategory" name="itemcategory" placeholder="Select item category" required>
+        <option>Appetizer</option>
+        <option>Side</option>
+        <option>Entree</option>
+        <option>Dissert</option>
+        <option>Beverage</option>
+        <option>Others</option>
+    </select>
 </div>
 
 <table class="table table-striped align-middle">
