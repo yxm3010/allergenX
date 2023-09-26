@@ -12,6 +12,7 @@
     <script>
       function querydb(){
 
+        var customerID = geturlparam("location");
         var chkWheat = document.getElementById("chkWheat").checked;
         var chkMilk = document.getElementById("chkMilk").checked;
         var chkEggs = document.getElementById("chkEggs").checked; 
@@ -25,7 +26,7 @@
         var chkSoy = document.getElementById("chkSoy").checked;
 
         var server_data = [
-          {"customerID": 0},
+          {"customerID": customerID},
           {"chkWheat": chkWheat},
           {"chkMilk": chkMilk},
           {"chkEggs": chkEggs},

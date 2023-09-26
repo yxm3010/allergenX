@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os.path
@@ -9,6 +9,10 @@ import requests
 db = SQLAlchemy()
 # create the app
 app = Flask(__name__)
+
+# https://flask.palletsprojects.com/en/2.3.x/config/#SECRET_KEY
+app.config["SECRET_KEY"] = 'm\xe9*Y\xc0\xd90\xb4\xce\xb9/h\xe3\xc3\xd3\xd1\xfa>\xc4\xf8C\x10\xa5\xbb'
+
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///allergenx.db"
 # https://docs.sqlalchemy.org/en/20/core/engines.html
@@ -57,9 +61,17 @@ class Allergen(db.Model):
     soyOptions = db.Column('soyOptions', db.String(10))
     soyScore = db.Column('soyScore', db.Integer)
 
-@app.route("/")
-def hello_world():
+# Make it dynamic website using URL arguments. Store it in session cookie
+@app.route("/main")
+def main():
+    session['customerID'] = request.args.get('location')
+    print(request.args.get('location'))
     return render_template('index.html')
+
+@app.route("/home")
+def home():
+    location = session['customerID']
+    return redirect(url_for('main', location=location))
 
 @app.route("/test2")
 def test():
