@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, login_required
 from datetime import datetime
 import os.path
 import requests
@@ -8,6 +9,7 @@ import random
 # https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/quickstart/
 # create the extension
 db = SQLAlchemy()
+login_manager = LoginManager()
 # create the app
 app = Flask(__name__)
 
@@ -24,6 +26,9 @@ app.config["SQLALCHEMY_BINDS"] = {
  # initialize the app with the extension
 db.init_app(app)
 
+# initialize the login manager
+login_manager.init_app(app)
+
 def get_score(check, opt):
         if(check):
             if not opt:
@@ -36,7 +41,8 @@ def get_score(check, opt):
 class User(db.Model):
     __tablename__ = "users"
     __bind_key__ = "auth"
-    customerid = db.Column('customerid', db.Integer, unique=True, primary_key=True)
+
+    customerID = db.Column('customerID', db.Integer, unique=True, primary_key=True)
     firstname = db.Column('firstname', db.String(120))
     lastname = db.Column('lastname', db.String(120))
     useremail = db.Column('email', db.String(120), unique=True)
@@ -48,6 +54,21 @@ class User(db.Model):
     state = db.Column('state', db.String(120))
     zip = db.Column('zip', db.Integer)
     membersince = db.Column('membersince', db.String(120))
+    
+    def is_active(self):
+        return True
+
+    def is_authenticated(self):
+        return self.is_active
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return str(self.customerID)
+        except AttributeError:
+            raise NotImplementedError("No `id` attribute - override `get_id`") from None
 
 class Allergen(db.Model):
     __tablename__ = 'allergenx'
@@ -82,6 +103,12 @@ class Allergen(db.Model):
     soyOptions = db.Column('soyOptions', db.String(10))
     soyScore = db.Column('soyScore', db.Integer)
 
+@login_manager.user_loader
+def load_user(customerID):
+    result = User.query.filter(User.customerID==customerID).first()
+    print(result.customerID)
+    return result.customerID
+
 # Make it dynamic website using URL arguments. Store it in session cookie
 @app.route("/main")
 def main():
@@ -115,7 +142,7 @@ def register():
 
     if request.method == "POST":
         db_row =  User(
-            customerid = _get_new_id(),
+            customerID = _get_new_id(),
             firstname = request.form['firstname'],
             lastname = request.form['lastname'],
             useremail = request.form['useremail'],
@@ -143,11 +170,15 @@ def auth():
     if request.method == "POST":
         useremail = request.form['useremail']
         userpassword = request.form['userpassword']
-        print([useremail,userpassword])
-        return redirect(url_for('test'))
+        result = User.query.filter(User.useremail==useremail,
+                                   User.userpassword==userpassword).first()
+        if result:
+            login_user(result, remember=True)
+            return redirect(url_for('test'))
     return redirect(url_for('login'))
 
 @app.route("/test2")
+@login_required
 def test():
     if not os.path.exists('allergenx.db'):
         with app.app_context(): # I think this allows db to access app config data like SQLALCHEMY_DATABASE_URI
