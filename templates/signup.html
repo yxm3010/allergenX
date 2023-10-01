@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AllergenX</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='html2flask.js') }}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+  </head>
+  <body>
+
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <div class="container">
+      <main>
+        <h1>Sign Up</h1>
+        <form action="{{ url_for('register') }}" method="post">
+
+            <div class="row">
+              <div class="col">
+                <label for="firstname">First name</label>
+                <input type="text" class="form-control" id="firstname" name="firstname" placeholder="John" required>
+              </div>
+              <div class="col">
+                <label for="lastname">Last name</label>
+                <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Smith" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="useremail">Email address</label>
+                <input type="email" class="form-control" name="useremail" id="useremail" aria-describedby="emailHelp" placeholder="Enter email">
+              </div>
+              <div class="col">
+                <label for="userpassword">Password</label>
+                <input type="password" class="form-control" name="userpassword" id="userpassword" placeholder="Password">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="venuename">Select your plan</label>
+                <select class="form-control" name="selectplan" id="selectplan">
+                  <option>Basic</option>
+                  <option disabled>Advanced</option>
+                  <option disabled>Premium</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <label for="venuename">Venue name</label>
+                <input type="text" class="form-control" id="venuename" name="venuename" placeholder="Bethany Cafe" required>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-5 mb-3">
+                <label for="address">Venue Address</label>
+                <input type="text" class="form-control" name="address" id="address" placeholder="Address" required>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="city">City</label>
+                <input type="text" class="form-control" name="city" id="city" placeholder="City" required>
+              </div>
+              <div class="col-md-2 mb-3">
+                <label for="state">State</label>
+                <input type="text" class="form-control" name="state" id="state" placeholder="State" required>
+              </div>
+              <div class="col-md-2 mb-3">
+                <label for="zip">Zip</label>
+                <input type="text" class="form-control" name="zip" id="zip" placeholder="Zip" required>
+              </div>
+            </div>
+            <button class="btn btn-primary" type="submit">Sign Up</button>
+        </form>
+      </main>
+    </div>
+  {% endblock %}
+  </body>
+</html>

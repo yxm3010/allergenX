@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os.path
 import requests
+import random
 
 # https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/quickstart/
 # create the extension
@@ -15,8 +16,12 @@ app.config["SECRET_KEY"] = 'm\xe9*Y\xc0\xd90\xb4\xce\xb9/h\xe3\xc3\xd3\xd1\xfa>\
 
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///allergenx.db"
+app.config["SQLALCHEMY_BINDS"] = {
+    "auth": "sqlite:///user.db"
+}
 # https://docs.sqlalchemy.org/en/20/core/engines.html
-# initialize the app with the extension
+ 
+ # initialize the app with the extension
 db.init_app(app)
 
 def get_score(check, opt):
@@ -27,6 +32,22 @@ def get_score(check, opt):
                 return 50 # Restrant has option to avoid allergen
         else:
             return 100 # Allergen not used in the ingredients 
+
+class User(db.Model):
+    __tablename__ = "users"
+    __bind_key__ = "auth"
+    customerid = db.Column('customerid', db.Integer, unique=True, primary_key=True)
+    firstname = db.Column('firstname', db.String(120))
+    lastname = db.Column('lastname', db.String(120))
+    useremail = db.Column('email', db.String(120), unique=True)
+    userpassword = db.Column('userpassword', db.String(120))
+    selectplan = db.Column('selectplan', db.String(120))
+    venuename = db.Column('venuename', db.String(120))
+    address = db.Column('address', db.String(120))
+    city = db.Column('city', db.String(120))
+    state = db.Column('state', db.String(120))
+    zip = db.Column('zip', db.Integer)
+    membersince = db.Column('membersince', db.String(120))
 
 class Allergen(db.Model):
     __tablename__ = 'allergenx'
@@ -73,11 +94,64 @@ def home():
     location = session['customerID']
     return redirect(url_for('main', location=location))
 
+@app.route("/login")
+def login():
+    return render_template('login.html')
+
+@app.route("/signup")
+def signup():
+    return render_template('signup.html')
+
+@app.route("/register", methods=['POST', 'GET'])
+def register():
+
+    def _get_new_id():
+        random.seed(int(datetime.now().timestamp()*1000))
+        return int(random.random()*1000000)
+    
+    if not os.path.exists('user.db'):
+        with app.app_context(): # I think this allows db to access app config data like SQLALCHEMY_DATABASE_URI
+            db.create_all(["auth"]) # Creates bind for both allergenx.db and auth.db
+
+    if request.method == "POST":
+        db_row =  User(
+            customerid = _get_new_id(),
+            firstname = request.form['firstname'],
+            lastname = request.form['lastname'],
+            useremail = request.form['useremail'],
+            userpassword = request.form['userpassword'],
+            selectplan = request.form.get('selectplan'),
+            venuename = request.form['venuename'],
+            address = request.form['address'],
+            city = request.form['city'],
+            state = request.form['state'],
+            zip = request.form['zip'],
+            membersince = datetime.now().strftime("%m/%d/%y")
+         )
+        
+        email_exits = User.query.filter(User.useremail==request.form['useremail']).all()
+
+        if not email_exits:
+            db.session.add(db_row)
+            db.session.commit()
+            return redirect(url_for('login'))
+        else:
+            return redirect(url_for('signup'))
+
+@app.route("/auth", methods=['POST', 'GET'])
+def auth():
+    if request.method == "POST":
+        useremail = request.form['useremail']
+        userpassword = request.form['userpassword']
+        print([useremail,userpassword])
+        return redirect(url_for('test'))
+    return redirect(url_for('login'))
+
 @app.route("/test2")
 def test():
     if not os.path.exists('allergenx.db'):
         with app.app_context(): # I think this allows db to access app config data like SQLALCHEMY_DATABASE_URI
-            db.create_all()
+            db.create_all([None]) # Creates bind for both allergenx.db and auth.db
     return render_template('test2.html')
 
 @app.route("/load_current_db", methods=['POST', 'GET'])
@@ -100,40 +174,6 @@ def load_current_db():
     
     print(response)
     return jsonify(response)
-
-# @app.route("/proc_allergen_db", methods=['POST', 'GET'])
-# def process():
-#     if request.method == "POST":
-#         allergen_data = request.get_json()
-#         print(allergen_data)
-#         db_row =  Allergen(
-#             customerID = allergen_data[0]['customerID'],
-#             item = allergen_data[1]['item'], 
-#             timestamp = datetime.now(),
-#             hasEggs = allergen_data[2]['hasEgg'],
-#             eggOptions = allergen_data[3]['eggOptions'], 
-#             eggScore = get_score(allergen_data[2]['hasEgg'], allergen_data[3]['eggOptions']),
-#             hasNuts = allergen_data[4]['hasNuts'],
-#             nutsOptions = allergen_data[5]['nutsOptions'], 
-#             nutsScore = get_score(allergen_data[4]['hasNuts'], allergen_data[5]['nutsOptions']),
-#             hasMilk = allergen_data[6]['hasMilk'],
-#             milkOptions = allergen_data[7]['milkOptions'], 
-#             milkScore = get_score(allergen_data[6]['hasMilk'], allergen_data[7]['milkOptions'])
-#             )
-#         db.session.add(db_row)
-#         db.session.commit()
-
-#         # Read back
-#         query = "SELECT * from allergenx WHERE item='%s'"% allergen_data[1]['item']
-#         results= db.session.execute(query).first()
-
-#         result = {'item': results[1],
-#                   'eggScore': results[5],
-#                   'nutsScore': results[8],
-#                   'milkScore': results[11]
-#                   }
-#         """ 'item': db.session.execute(db.select(Allergen.item).where(Allergen.customerID == allergen_data[0]['customerID'].where(Allergen.item == allergen_data[0]['customerID']))) """
-#         return jsonify(result)
 
 @app.route("/add_new_row", methods=['POST', 'GET'])
 def add_new_row():
