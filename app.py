@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, login_user, login_required
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from datetime import datetime
 import os.path
 import requests
@@ -121,7 +121,15 @@ def home():
 
 @app.route("/login")
 def login():
-    return render_template('login.html')
+    if current_user.is_authenticated:
+        return redirect(url_for('test'))
+    else:
+        return render_template('login.html')
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 @app.route("/signup")
 def signup():
@@ -184,8 +192,9 @@ def test():
     return render_template('test2.html')
 
 @app.route("/load_current_db", methods=['POST', 'GET'])
+@login_required
 def load_current_db():
-    results = Allergen.query.filter_by(customerID='0').order_by(Allergen.item).all()
+    results = Allergen.query.filter_by(customerID=current_user.cutomerID).order_by(Allergen.item).all()
     response = []
     for result in results:
         response.append(
