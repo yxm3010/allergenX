@@ -105,9 +105,7 @@ class Allergen(db.Model):
 
 @login_manager.user_loader
 def load_user(customerID):
-    result = User.query.filter(User.customerID==customerID).first()
-    print(result.customerID)
-    return result.customerID
+    return User.query.filter(User.customerID==customerID).first()
 
 # Make it dynamic website using URL arguments. Store it in session cookie
 @app.route("/main")
