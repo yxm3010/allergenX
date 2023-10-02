@@ -1,5 +1,6 @@
 import qrcode
-from flask import Flask, render_template, request, redirect, url_for, jsonify, session
+from io import BytesIO
+from flask import Flask, render_template, request, redirect, url_for, jsonify, session, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from datetime import datetime
@@ -437,16 +438,16 @@ def query_db():
 
         return jsonify(response)
     
-@app.route("/gen_qrcode")
+@app.route("/gen_qrcode", methods=['POST', 'GET'])
 @login_required
 def gen_qrcode():
-    
-    def make_qrcode(cust, url):
-        img = qrcode.make(url)
-        fname = cust + '.png'
-        img.save(fname)
-
-    make_qrcode('mcdonalds','https://corporate.mcdonalds.com/corpmcd/home.html')
+    if request.method=="POST":
+        print("QRCODE")
+        pil_img = qrcode.make(f'https://corporate.mcdonalds.com/corpmcd/home.html?location={current_user.customerID}')
+        img_IO = BytesIO()
+        pil_img.save(img_IO,'PNG')
+        img_IO.seek(0)
+        return send_file(img_IO, mimetype='image/png')
 
 if __name__ == "__main__":
     app.run(debug=True)
