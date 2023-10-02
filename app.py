@@ -1,10 +1,11 @@
+import qrcode
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from datetime import datetime
 import os.path
-import requests
 import random
+
 
 # https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/quickstart/
 # create the extension
@@ -194,7 +195,7 @@ def test():
 @app.route("/load_current_db", methods=['POST', 'GET'])
 @login_required
 def load_current_db():
-    results = Allergen.query.filter_by(customerID=current_user.cutomerID).order_by(Allergen.item).all()
+    results = Allergen.query.filter_by(customerID=current_user.customerID).order_by(Allergen.item).all()
     response = []
     for result in results:
         response.append(
@@ -214,6 +215,7 @@ def load_current_db():
     return jsonify(response)
 
 @app.route("/add_new_row", methods=['POST', 'GET'])
+@login_required
 def add_new_row():
     if request.method == "POST":
 
@@ -245,7 +247,7 @@ def add_new_row():
         _soyOptions = True if (request.form.get('soyOptions') == "Yes") else False
         
         db_row =  Allergen(
-                customerID = 0,
+                customerID = current_user.customerID,
                 item = request.form['itemname'], 
                 timestamp = datetime.now(),
                 hasEggs = _hasEggs,
@@ -284,6 +286,7 @@ def add_new_row():
             return redirect(url_for('test'))
 
 @app.route("/update_row", methods=['POST', 'GET'])
+@login_required
 def update_row():
     if request.method == "POST":
 
@@ -317,7 +320,7 @@ def update_row():
         _soyOptions = True if (request.form.get('soyOptions') == "Yes") else False
 
         try:
-            _db_row = Allergen.query.filter_by(customerID=0, item=_itemName).first()
+            _db_row = Allergen.query.filter_by(customerID=current_user.customerID, item=_itemName).first()
             print("dbrow")
             print(_db_row.item)
             print(_hasEggs)
@@ -356,13 +359,14 @@ def update_row():
 
 
 @app.route("/del_allergen_db", methods=['POST', 'GET'])
+@login_required
 def delete():
     if request.method == "POST":
         serverData = request.get_json()
         items = serverData[1]['items']
         print(serverData)
         for itemName in items:
-            Allergen.query.filter_by(customerID=serverData[0]['customerID'], item=itemName).delete()
+            Allergen.query.filter_by(customerID=current_user.customerID, item=itemName).delete()
             db.session.commit()
     return True
 
@@ -432,6 +436,17 @@ def query_db():
         print(response)
 
         return jsonify(response)
+    
+@app.route("/gen_qrcode")
+@login_required
+def gen_qrcode():
+    
+    def make_qrcode(cust, url):
+        img = qrcode.make(url)
+        fname = cust + '.png'
+        img.save(fname)
+
+    make_qrcode('mcdonalds','https://corporate.mcdonalds.com/corpmcd/home.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

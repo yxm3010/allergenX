@@ -4,6 +4,9 @@
 <div class="container">
     <div class="text-center">
         <h1 class="display-4 mt-3">AllergenX</h1>
+        {% if current_user.is_authenticated %}
+        <p class="fw-lighter">Welcome back, {{ current_user.venuename }}</p>
+        {% endif %}
     </div>
 </div>
 
