@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from datetime import datetime
-import os.path
+import os.path, os
 import random
 
 
@@ -19,7 +19,11 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = 'm\xe9*Y\xc0\xd90\xb4\xce\xb9/h\xe3\xc3\xd3\xd1\xfa>\xc4\xf8C\x10\xa5\xbb'
 
 # configure the SQLite database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///allergenx.db"
+isprod = os.environ.get('PROD')
+if isprod:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://lebrvldiwztbln:1a9bc511377bdf9357d46a7cf0214b932f57739167441cfbdf78dfd8ecbab8f2@ec2-34-236-103-63.compute-1.amazonaws.com:5432/d6v0n1seecsers"
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///allergenx.db"
 
 # https://docs.sqlalchemy.org/en/20/core/engines.html
  
