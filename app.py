@@ -20,9 +20,7 @@ app.config["SECRET_KEY"] = 'm\xe9*Y\xc0\xd90\xb4\xce\xb9/h\xe3\xc3\xd3\xd1\xfa>\
 
 # configure the SQLite database, relative to the app instance folder
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///allergenx.db"
-app.config["SQLALCHEMY_BINDS"] = {
-    "auth": "sqlite:///user.db"
-}
+
 # https://docs.sqlalchemy.org/en/20/core/engines.html
  
  # initialize the app with the extension
@@ -42,7 +40,6 @@ def get_score(check, opt):
 
 class User(db.Model):
     __tablename__ = "users"
-    __bind_key__ = "auth"
 
     customerID = db.Column('customerID', db.Integer, unique=True, primary_key=True)
     firstname = db.Column('firstname', db.String(120))
@@ -110,6 +107,14 @@ def load_user(customerID):
     return User.query.filter(User.customerID==customerID).first()
 
 # Make it dynamic website using URL arguments. Store it in session cookie
+
+@app.route("/admin")
+def admin():
+    if not os.path.exists('allergenx.db'):
+        with app.app_context(): # I think this allows db to access app config data like SQLALCHEMY_DATABASE_URI
+            db.create_all([None]) # Creates bind for both allergenx.db and auth.db
+    return redirect(url_for('main'))
+
 @app.route("/main")
 def main():
     session['customerID'] = request.args.get('location')
@@ -144,10 +149,6 @@ def register():
         random.seed(int(datetime.now().timestamp()*1000))
         return int(random.random()*1000000)
     
-    if not os.path.exists('user.db'):
-        with app.app_context(): # I think this allows db to access app config data like SQLALCHEMY_DATABASE_URI
-            db.create_all(["auth"]) # Creates bind for both allergenx.db and auth.db
-
     if request.method == "POST":
         db_row =  User(
             customerID = _get_new_id(),
