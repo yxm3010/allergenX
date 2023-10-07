@@ -448,7 +448,7 @@ def query_db():
 def gen_qrcode():
     if request.method=="POST":
         print("QRCODE")
-        pil_img = qrcode.make(f'https://corporate.mcdonalds.com/corpmcd/home.html?location={current_user.customerID}')
+        pil_img = qrcode.make(f'https://allergenx-2858e16133d8.herokuapp.com/main?location={current_user.customerID}')
         img_IO = BytesIO()
         pil_img.save(img_IO,'PNG')
         img_IO.seek(0)
