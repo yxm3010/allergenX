@@ -21,7 +21,7 @@ app.config["SECRET_KEY"] = 'm\xe9*Y\xc0\xd90\xb4\xce\xb9/h\xe3\xc3\xd3\xd1\xfa>\
 # configure the SQLite database, relative to the app instance folder
 isprod = os.environ.get('PROD')
 if isprod:
-    app.config["SQLALCHEMY_DATABASE_URI"] = "postgres://lebrvldiwztbln:1a9bc511377bdf9357d46a7cf0214b932f57739167441cfbdf78dfd8ecbab8f2@ec2-34-236-103-63.compute-1.amazonaws.com:5432/d6v0n1seecsers"
+    app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://lebrvldiwztbln:1a9bc511377bdf9357d46a7cf0214b932f57739167441cfbdf78dfd8ecbab8f2@ec2-34-236-103-63.compute-1.amazonaws.com:5432/d6v0n1seecsers"
 else:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///allergenx.db"
 
